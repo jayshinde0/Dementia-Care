@@ -21,7 +21,11 @@ export default function LoginScreen({ navigation }) {
       await AsyncStorage.setItem('userId', response.data.user_id);
       await AsyncStorage.setItem('userName', response.data.name);
 
-      navigation.replace('Home');
+      // Force app to re-render by reloading
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Home' }],
+      });
     } catch (error) {
       Alert.alert('Login Failed', 'Please check your credentials');
     }
@@ -35,6 +39,7 @@ export default function LoginScreen({ navigation }) {
       <TextInput
         style={styles.input}
         placeholder="Email"
+        placeholderTextColor="#9CA3AF"
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
@@ -44,6 +49,7 @@ export default function LoginScreen({ navigation }) {
       <TextInput
         style={styles.input}
         placeholder="Password"
+        placeholderTextColor="#9CA3AF"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -60,41 +66,50 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    padding: 30,
-    backgroundColor: '#F5F5F5',
+    padding: 24,
+    backgroundColor: '#FAFAFA',
   },
   title: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    marginBottom: 10,
+    fontSize: 32,
+    fontWeight: '700',
+    marginBottom: 8,
     textAlign: 'center',
-    color: '#333',
+    color: '#1F2937',
+    letterSpacing: -0.5,
   },
   subtitle: {
-    fontSize: 20,
-    marginBottom: 40,
+    fontSize: 16,
+    marginBottom: 48,
     textAlign: 'center',
-    color: '#666',
+    color: '#6B7280',
+    fontWeight: '400',
   },
   input: {
-    backgroundColor: '#FFF',
-    padding: 20,
-    borderRadius: 15,
-    fontSize: 20,
-    marginBottom: 20,
-    borderWidth: 2,
-    borderColor: '#DDD',
+    backgroundColor: '#FFFFFF',
+    padding: 16,
+    borderRadius: 12,
+    fontSize: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    color: '#1F2937',
   },
   button: {
-    backgroundColor: '#4A90E2',
-    padding: 20,
-    borderRadius: 15,
+    backgroundColor: '#111827',
+    padding: 16,
+    borderRadius: 12,
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   buttonText: {
-    color: '#FFF',
-    fontSize: 24,
-    fontWeight: 'bold',
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+    letterSpacing: 0.3,
   },
 });

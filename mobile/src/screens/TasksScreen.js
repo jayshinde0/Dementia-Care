@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, StatusBar } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import * as Speech from 'expo-speech';
 
 export default function TasksScreen() {
@@ -21,21 +22,32 @@ export default function TasksScreen() {
 
   const renderTask = ({ item }) => (
     <TouchableOpacity
-      style={[styles.taskCard, item.completed && styles.taskCompleted]}
+      style={styles.taskCard}
       onPress={() => toggleTask(item.id)}
+      activeOpacity={0.7}
     >
-      <View style={styles.checkbox}>
-        {item.completed && <Text style={styles.checkmark}>✓</Text>}
+      <View style={[styles.checkbox, item.completed && styles.checkboxCompleted]}>
+        {item.completed && <Ionicons name="checkmark" size={20} color="#10B981" />}
       </View>
       <Text style={[styles.taskText, item.completed && styles.taskTextCompleted]}>
         {item.title}
       </Text>
+      <Ionicons name="chevron-forward" size={20} color="#94A3B8" />
     </TouchableOpacity>
   );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>My Daily Tasks</Text>
+      <StatusBar barStyle="light-content" backgroundColor="#1E293B" />
+      
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Tasks</Text>
+        <Text style={styles.headerSubtitle}>
+          {tasks.filter(t => t.completed).length} of {tasks.length} completed
+        </Text>
+      </View>
+
       <FlatList
         data={tasks}
         renderItem={renderTask}
@@ -49,50 +61,64 @@ export default function TasksScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#FFFFFF',
   },
   header: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    padding: 20,
-    backgroundColor: '#FFF',
+    backgroundColor: '#1E293B',
+    paddingTop: 50,
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginBottom: 4,
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: '#94A3B8',
   },
   list: {
-    padding: 15,
+    padding: 20,
+    paddingBottom: 40,
   },
   taskCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFF',
+    backgroundColor: '#F8F9FA',
     padding: 20,
-    borderRadius: 15,
-    marginBottom: 15,
+    borderRadius: 16,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
     elevation: 2,
   },
-  taskCompleted: {
-    backgroundColor: '#E8F5E9',
-  },
   checkbox: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    borderWidth: 3,
-    borderColor: '#4A90E2',
-    marginRight: 15,
-    justifyContent: 'center',
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    borderWidth: 2,
+    borderColor: '#CBD5E1',
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
   },
-  checkmark: {
-    fontSize: 28,
-    color: '#4A90E2',
-    fontWeight: 'bold',
+  checkboxCompleted: {
+    borderColor: '#10B981',
+    backgroundColor: '#D1FAE5',
   },
   taskText: {
-    fontSize: 24,
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1E293B',
     flex: 1,
   },
   taskTextCompleted: {
     textDecorationLine: 'line-through',
-    color: '#999',
+    color: '#94A3B8',
   },
 });

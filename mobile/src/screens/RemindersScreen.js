@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, StatusBar } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons';
 import * as Speech from 'expo-speech';
 import axios from 'axios';
 
@@ -47,12 +48,12 @@ export default function RemindersScreen() {
 
   const getReminderIcon = (type) => {
     const icons = {
-      medication: '💊',
-      meal: '🍽️',
-      appointment: '📅',
-      task: '✓',
+      medication: 'medical-outline',
+      meal: 'restaurant-outline',
+      appointment: 'calendar-outline',
+      task: 'checkmark-circle-outline',
     };
-    return icons[type] || '🔔';
+    return icons[type] || 'notifications-outline';
   };
 
   const renderReminder = ({ item }) => (
@@ -62,26 +63,42 @@ export default function RemindersScreen() {
         Speech.speak(item.title + '. ' + item.description, { language: 'en' });
         completeReminder(item);
       }}
+      activeOpacity={0.7}
     >
-      <Text style={styles.icon}>{getReminderIcon(item.type)}</Text>
+      <View style={styles.iconContainer}>
+        <Ionicons name={getReminderIcon(item.type)} size={28} color="#1E293B" />
+      </View>
       <View style={styles.reminderContent}>
         <Text style={styles.reminderTitle}>{item.title}</Text>
         <Text style={styles.reminderTime}>{item.scheduled_time}</Text>
-        <Text style={styles.reminderDesc}>{item.description}</Text>
+        {item.description && (
+          <Text style={styles.reminderDesc}>{item.description}</Text>
+        )}
       </View>
+      <Ionicons name="chevron-forward" size={20} color="#94A3B8" />
     </TouchableOpacity>
   );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Today's Reminders</Text>
+      <StatusBar barStyle="light-content" backgroundColor="#1E293B" />
+      
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Reminders</Text>
+      </View>
+
       <FlatList
         data={reminders}
         renderItem={renderReminder}
         keyExtractor={(item) => item._id}
         contentContainerStyle={styles.list}
         ListEmptyComponent={
-          <Text style={styles.emptyText}>No reminders for today</Text>
+          <View style={styles.emptyContainer}>
+            <Ionicons name="checkmark-done-circle-outline" size={64} color="#CBD5E1" />
+            <Text style={styles.emptyText}>All caught up!</Text>
+            <Text style={styles.emptySubtext}>No reminders for today</Text>
+          </View>
         }
       />
     </View>
@@ -91,54 +108,78 @@ export default function RemindersScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#FFFFFF',
   },
   header: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    padding: 20,
-    backgroundColor: '#FFF',
+    backgroundColor: '#1E293B',
+    paddingTop: 50,
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
   list: {
-    padding: 15,
+    padding: 20,
+    paddingBottom: 40,
   },
   reminderCard: {
     flexDirection: 'row',
-    backgroundColor: '#FFF',
+    alignItems: 'center',
+    backgroundColor: '#F8F9FA',
     padding: 20,
-    borderRadius: 15,
-    marginBottom: 15,
-    elevation: 2,
+    borderRadius: 16,
+    marginBottom: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  icon: {
-    fontSize: 40,
-    marginRight: 15,
+  iconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
   },
   reminderContent: {
     flex: 1,
   },
   reminderTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 5,
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1E293B',
+    marginBottom: 4,
   },
   reminderTime: {
-    fontSize: 20,
-    color: '#4A90E2',
-    marginBottom: 5,
+    fontSize: 14,
+    color: '#0891B2',
+    fontWeight: '500',
+    marginBottom: 4,
   },
   reminderDesc: {
-    fontSize: 18,
-    color: '#666',
+    fontSize: 14,
+    color: '#94A3B8',
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 100,
   },
   emptyText: {
-    fontSize: 22,
-    textAlign: 'center',
-    marginTop: 50,
-    color: '#999',
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#1E293B',
+    marginTop: 16,
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: '#94A3B8',
+    marginTop: 4,
   },
 });

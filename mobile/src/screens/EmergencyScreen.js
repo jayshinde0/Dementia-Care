@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, Animated, StatusBar } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons';
 import * as Speech from 'expo-speech';
 import * as Location from 'expo-location';
 import axios from 'axios';
@@ -9,6 +10,25 @@ const API_URL = 'http://192.168.1.37:8000/api';
 
 export default function EmergencyScreen() {
   const [sending, setSending] = useState(false);
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    // Pulse animation
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.05,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, []);
 
   const handleEmergency = async () => {
     setSending(true);
@@ -49,22 +69,38 @@ export default function EmergencyScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Emergency Help</Text>
-      <Text style={styles.subtitle}>Press the button if you need help</Text>
+      <StatusBar barStyle="light-content" backgroundColor="#1E293B" />
+      
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Emergency</Text>
+      </View>
 
-      <TouchableOpacity
-        style={[styles.sosButton, sending && styles.sosButtonDisabled]}
-        onPress={handleEmergency}
-        disabled={sending}
-      >
-        <Text style={styles.sosIcon}>🚨</Text>
-        <Text style={styles.sosText}>SOS</Text>
-        <Text style={styles.sosSubtext}>Press for Help</Text>
-      </TouchableOpacity>
+      <View style={styles.content}>
+        <Text style={styles.title}>Need Help?</Text>
+        <Text style={styles.subtitle}>Press the button below to alert your caregiver</Text>
 
-      <Text style={styles.info}>
-        This will immediately notify your caregiver with your current location
-      </Text>
+        <View style={styles.buttonContainer}>
+          <Animated.View style={[styles.sosButton, { transform: [{ scale: pulseAnim }] }]}>
+            <TouchableOpacity
+              style={[styles.sosInner, sending && styles.sosButtonDisabled]}
+              onPress={handleEmergency}
+              disabled={sending}
+              activeOpacity={0.9}
+            >
+              <Ionicons name="alert-circle" size={80} color="#FFFFFF" />
+              <Text style={styles.sosText}>SOS</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </View>
+
+        <View style={styles.infoCard}>
+          <Ionicons name="information-circle-outline" size={24} color="#1E293B" />
+          <Text style={styles.info}>
+            This will immediately notify your caregiver with your current location
+          </Text>
+        </View>
+      </View>
     </View>
   );
 }
@@ -72,58 +108,83 @@ export default function EmergencyScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  header: {
+    backgroundColor: '#1E293B',
+    paddingTop: 50,
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  content: {
+    flex: 1,
+    padding: 20,
     alignItems: 'center',
-    padding: 30,
-    backgroundColor: '#F5F5F5',
+    justifyContent: 'center',
   },
   title: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#333',
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#1E293B',
+    marginBottom: 8,
   },
   subtitle: {
-    fontSize: 22,
-    marginBottom: 50,
+    fontSize: 16,
+    color: '#94A3B8',
     textAlign: 'center',
-    color: '#666',
+    marginBottom: 60,
+  },
+  buttonContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 60,
   },
   sosButton: {
-    width: 280,
-    height: 280,
-    borderRadius: 140,
-    backgroundColor: '#E74C3C',
+    width: 240,
+    height: 240,
+    borderRadius: 120,
+    backgroundColor: '#DC3545',
+    shadowColor: '#DC3545',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  sosInner: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 120,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
   },
   sosButtonDisabled: {
-    backgroundColor: '#95A5A6',
-  },
-  sosIcon: {
-    fontSize: 80,
+    backgroundColor: '#94A3B8',
   },
   sosText: {
     fontSize: 48,
-    fontWeight: 'bold',
-    color: '#FFF',
-    marginTop: 10,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    marginTop: 12,
+    letterSpacing: 4,
   },
-  sosSubtext: {
-    fontSize: 20,
-    color: '#FFF',
-    marginTop: 5,
+  infoCard: {
+    flexDirection: 'row',
+    backgroundColor: '#F8F9FA',
+    padding: 20,
+    borderRadius: 16,
+    alignItems: 'center',
+    maxWidth: 320,
   },
   info: {
-    fontSize: 18,
-    textAlign: 'center',
-    marginTop: 50,
-    color: '#666',
-    paddingHorizontal: 20,
+    flex: 1,
+    fontSize: 14,
+    color: '#1E293B',
+    marginLeft: 12,
+    lineHeight: 20,
   },
 });

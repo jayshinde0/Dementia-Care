@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-background text-slate-800 antialiased font-sans;
+  margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  @apply tracking-tight font-bold text-slate-900;
+}
+
+.glass {
+  @apply bg-white/70 backdrop-blur-lg border border-white/20 shadow-floating;
+}
+
+.glass-dark {
+  @apply bg-slate-900/80 backdrop-blur-xl border border-white/10 shadow-floating;
+}

@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "Dementia Care",
+    "slug": "dementia-care-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#FFFFFF",
+      "image": "./assets/splash-icon.png"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.dementiacare.mobile"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#FFFFFF",
+        "foregroundImage": "./assets/adaptive-icon.png"
+      },
+      "package": "com.dementiacare.mobile"
+    },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "newArchEnabled": false,
+            "enableProguardInReleaseBuilds": false
+          },
+          "ios": {
+            "newArchEnabled": false
+          }
+        }
+      ]
+    ],
+    "extra": {
+      "newArchEnabled": false
+    }
+  }
+}

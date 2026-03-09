@@ -10,27 +10,56 @@ A comprehensive AI-powered healthcare platform for dementia patient care and car
 |----------|-------------|
 | **[SETUP_GUIDE.md](SETUP_GUIDE.md)** | Complete installation and setup instructions |
 | **[USER_GUIDE.md](USER_GUIDE.md)** | How to use all features and dashboards |
+| **[MOBILE_APP_GUIDE.md](MOBILE_APP_GUIDE.md)** | Mobile app setup with Expo SDK 54 |
+| **[NAVIGATION_GUIDE.md](NAVIGATION_GUIDE.md)** | Navigation flow between pages |
+| **[PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)** | Complete project architecture |
 | **[LOGIN_CREDENTIALS.txt](LOGIN_CREDENTIALS.txt)** | Default login accounts |
 
 ---
 
 ## 🚀 Quick Start
 
-### 1. Start Backend
+### Option 1: Start All Services (Recommended)
+```bash
+start-all.bat
+```
+
+This will start:
+- Backend API (port 8000)
+- Dashboard (port 3000)
+- Landing Page (port 3001)
+
+### Option 2: Start Services Individually
+
+#### Backend
 ```bash
 cd backend
 venv\Scripts\python.exe main.py
 ```
 
-### 2. Start Dashboard
+#### Dashboard
 ```bash
 cd dashboard
 npm start
 ```
 
-### 3. Access System
-- **Dashboard**: http://localhost:3000
+#### Landing Page
+```bash
+cd landing-react
+set PORT=3001
+npm start
+```
+
+### Access Points
+- **Landing Page**: http://localhost:3001 (Start here!)
+- **Dashboard**: http://localhost:3000 (Login & App)
+- **Backend API**: http://localhost:8000
 - **API Docs**: http://localhost:8000/docs
+
+### Mobile/Phone Access
+Replace `localhost` with `192.168.1.37`:
+- Landing: http://192.168.1.37:3001
+- Dashboard: http://192.168.1.37:3000
 
 ---
 
@@ -82,10 +111,20 @@ dementia-care/
 │   ├── routers/               # API endpoints
 │   └── main.py                # Entry point
 │
-├── dashboard/                  # React frontend
+├── dashboard/                  # React caregiver/patient dashboard
 │   └── src/
 │       ├── pages/             # Dashboard pages
 │       └── components/        # Reusable components
+│
+├── landing-react/              # React landing page
+│   └── src/
+│       ├── pages/             # Landing pages (Home, About, Contact)
+│       └── components/        # Navigation, Footer
+│
+├── mobile/                     # React Native mobile app (Expo SDK 54)
+│   ├── App.js                 # Main entry
+│   ├── app.json               # Expo config
+│   └── src/screens/           # Mobile screens
 │
 ├── docs/                       # Additional documentation
 │   ├── API.md
@@ -93,8 +132,11 @@ dementia-care/
 │   ├── ARCHITECTURE.md
 │   └── AI_MODULES.md
 │
+├── start-all.bat              # Start all services
 ├── SETUP_GUIDE.md             # Installation guide
 ├── USER_GUIDE.md              # Usage guide
+├── MOBILE_APP_GUIDE.md        # Mobile app setup
+├── NAVIGATION_GUIDE.md        # Navigation flow
 └── LOGIN_CREDENTIALS.txt      # Default accounts
 ```
 
@@ -120,9 +162,25 @@ For detailed help:
 ## 🎓 Getting Started
 
 1. Read **[SETUP_GUIDE.md](SETUP_GUIDE.md)** to install and configure
-2. Start the backend and dashboard
-3. Login with default credentials
-4. Read **[USER_GUIDE.md](USER_GUIDE.md)** to learn all features
+2. Run `start-all.bat` to start all services
+3. Visit **Landing Page** at http://localhost:3001
+4. Click **"Get Started"** and login with credentials above
+5. Read **[USER_GUIDE.md](USER_GUIDE.md)** to learn all features
+6. Check **[NAVIGATION_GUIDE.md](NAVIGATION_GUIDE.md)** for navigation flow
+
+---
+
+## 🧭 Quick Navigation
+
+```
+Landing Page (localhost:3001)
+    ↓ Click "Get Started"
+Login Page (localhost:3000/login)
+    ↓ Select Role & Login
+Dashboard/Portal
+    ↓ Click "Back to Home"
+Landing Page (localhost:3001)
+```
 
 ---
 

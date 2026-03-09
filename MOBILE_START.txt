@@ -1,0 +1,29 @@
+========================================
+  MOBILE APP - READY TO START
+========================================
+
+All dependencies installed successfully!
+
+START COMMAND:
+cd mobile
+npx expo start --clear
+
+When Metro bundler starts:
+- Press 'Y' if asked about port 8082
+- Scan QR code with Expo Go app (SDK 54)
+
+========================================
+
+IMPORTANT:
+- Make sure backend is running first
+- Backend URL: http://192.168.1.37:8000
+
+========================================
+
+BACKUP OPTION:
+If mobile app still has issues, use web dashboard:
+http://192.168.1.37:3000
+
+Works perfectly on phone browsers!
+
+========================================

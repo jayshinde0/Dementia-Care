@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, StatusBar } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons';
 import * as Speech from 'expo-speech';
 
 export default function HomeScreen({ navigation }) {
-  const [userName, setUserName] = useState('');
-  const [greeting, setGreeting] = useState('');
+  const [userName, setUserName] = useState('John Smith');
+  const [greeting, setGreeting] = useState('Good Morning');
 
   useEffect(() => {
     loadUserData();
@@ -14,7 +15,7 @@ export default function HomeScreen({ navigation }) {
 
   const loadUserData = async () => {
     const name = await AsyncStorage.getItem('userName');
-    setUserName(name || 'Friend');
+    if (name) setUserName(name);
   };
 
   const setGreetingMessage = () => {
@@ -24,84 +25,166 @@ export default function HomeScreen({ navigation }) {
     else setGreeting('Good Evening');
   };
 
-  const speak = (text) => {
-    Speech.speak(text, { language: 'en' });
-  };
-
   const menuItems = [
-    { title: 'My Reminders', icon: '🔔', screen: 'Reminders', color: '#FF6B6B' },
-    { title: 'My Tasks', icon: '✓', screen: 'Tasks', color: '#4ECDC4' },
-    { title: 'How I Feel', icon: '😊', screen: 'Health', color: '#95E1D3' },
-    { title: 'Brain Games', icon: '🧠', screen: 'Games', color: '#F38181' },
-    { title: 'Emergency', icon: '🚨', screen: 'Emergency', color: '#E74C3C' },
+    {
+      title: 'Reminders',
+      subtitle: 'View your daily reminders',
+      icon: 'notifications-outline',
+      screen: 'Reminders',
+      bgColor: '#F8F9FA',
+    },
+    {
+      title: 'Tasks',
+      subtitle: 'Check your to-do list',
+      icon: 'checkmark-circle-outline',
+      screen: 'Tasks',
+      bgColor: '#F8F9FA',
+    },
+    {
+      title: 'Health',
+      subtitle: 'Track how you feel',
+      icon: 'heart-outline',
+      screen: 'Health',
+      bgColor: '#F8F9FA',
+    },
+    {
+      title: 'Brain Games',
+      subtitle: 'Exercise your mind',
+      icon: 'game-controller-outline',
+      screen: 'Games',
+      bgColor: '#F8F9FA',
+    },
+    {
+      title: 'Emergency',
+      subtitle: 'Get help immediately',
+      icon: 'alert-circle-outline',
+      screen: 'Emergency',
+      bgColor: '#FFE8E8',
+      textColor: '#DC3545',
+    },
   ];
 
+  const handleMenuPress = (item) => {
+    Speech.speak(`Opening ${item.title}`, { language: 'en' });
+    navigation.navigate(item.screen);
+  };
+
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#1E293B" />
+      
+      {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.greeting}>{greeting},</Text>
-        <Text style={styles.name}>{userName}!</Text>
+        <Text style={styles.headerTitle}>My Day</Text>
       </View>
 
-      <View style={styles.menu}>
-        {menuItems.map((item, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[styles.menuItem, { backgroundColor: item.color }]}
-            onPress={() => {
-              speak(item.title);
-              navigation.navigate(item.screen);
-            }}
-          >
-            <Text style={styles.icon}>{item.icon}</Text>
-            <Text style={styles.menuText}>{item.title}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+        {/* Greeting */}
+        <View style={styles.greetingSection}>
+          <Text style={styles.greeting}>{greeting}</Text>
+          <Text style={styles.name}>{userName}</Text>
+        </View>
+
+        {/* Menu Items */}
+        <View style={styles.menuContainer}>
+          {menuItems.map((item, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[styles.menuCard, { backgroundColor: item.bgColor }]}
+              onPress={() => handleMenuPress(item)}
+              activeOpacity={0.7}
+            >
+              <View style={styles.menuIconContainer}>
+                <Ionicons 
+                  name={item.icon} 
+                  size={28} 
+                  color={item.textColor || '#1E293B'} 
+                />
+              </View>
+              <View style={styles.menuContent}>
+                <Text style={[styles.menuTitle, item.textColor && { color: item.textColor }]}>
+                  {item.title}
+                </Text>
+                <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="#94A3B8" />
+            </TouchableOpacity>
+          ))}
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#FFFFFF',
   },
   header: {
-    padding: 30,
-    backgroundColor: '#4A90E2',
+    backgroundColor: '#1E293B',
+    paddingTop: 50,
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  scrollContent: {
+    paddingBottom: 40,
+  },
+  greetingSection: {
+    padding: 20,
+    paddingTop: 30,
+    paddingBottom: 30,
   },
   greeting: {
-    fontSize: 28,
-    color: '#FFF',
+    fontSize: 16,
+    color: '#94A3B8',
+    marginBottom: 4,
   },
   name: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: '#FFF',
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#1E293B',
   },
-  menu: {
-    padding: 20,
+  menuContainer: {
+    paddingHorizontal: 20,
   },
-  menuItem: {
+  menuCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 25,
-    borderRadius: 20,
-    marginBottom: 20,
-    elevation: 3,
+    padding: 20,
+    borderRadius: 16,
+    marginBottom: 12,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  icon: {
-    fontSize: 48,
-    marginRight: 20,
+  menuIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
   },
-  menuText: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#FFF',
+  menuContent: {
+    flex: 1,
+  },
+  menuTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1E293B',
+    marginBottom: 2,
+  },
+  menuSubtitle: {
+    fontSize: 14,
+    color: '#94A3B8',
   },
 });

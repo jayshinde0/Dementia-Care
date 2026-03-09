@@ -65,10 +65,17 @@ export default function PatientHome() {
     window.location.reload();
   };
 
+  const handleBackToHome = () => {
+    window.location.href = 'http://localhost:3001';
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-xl">Loading...</div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading your dashboard...</p>
+        </div>
       </div>
     );
   }
@@ -82,12 +89,20 @@ export default function PatientHome() {
             <h1 className="text-2xl font-bold text-gray-800">Welcome, {userName}!</h1>
             <p className="text-gray-600">Your daily care companion</p>
           </div>
-          <button
-            onClick={handleLogout}
-            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
-          >
-            Logout
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={handleBackToHome}
+              className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition"
+            >
+              🌐 Home
+            </button>
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+            >
+              Logout
+            </button>
+          </div>
         </div>
       </div>
 
