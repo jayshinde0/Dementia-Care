@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Network Access Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 { color: #333; }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .pending { background: #fff3cd; color: #856404; }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        .info {
+            background: #e7f3ff;
+            padding: 15px;
+            border-left: 4px solid #007bff;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Network Access Test</h1>
+    <p><strong>Instructions:</strong> Open this page on your mobile device to test if it can reach the backend servers.</p>
+
+    <div class="info">
+        <strong>Your Computer IP:</strong> 192.168.1.37<br>
+        <strong>Backend URL:</strong> http://192.168.1.37:8000<br>
+        <strong>Socket URL:</strong> http://192.168.1.37:8001
+    </div>
+
+    <div class="test-section">
+        <h2>Test 1: Backend API (Port 8000)</h2>
+        <button onclick="testBackend()">Test Backend Connection</button>
+        <div id="backend-status" class="status pending">Not tested yet</div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 2: Socket Server (Port 8001)</h2>
+        <button onclick="testSocket()">Test Socket Connection</button>
+        <div id="socket-status" class="status pending">Not tested yet</div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 3: Get Patient Tasks</h2>
+        <input type="text" id="patient-id" placeholder="Enter Patient ID" style="width: 300px; padding: 8px; margin-right: 10px;">
+        <button onclick="testTasks()">Test Tasks API</button>
+        <div id="tasks-status" class="status pending">Not tested yet</div>
+        <pre id="tasks-data" style="background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto;"></pre>
+    </div>
+
+    <script>
+        async function testBackend() {
+            const statusDiv = document.getElementById('backend-status');
+            statusDiv.textContent = 'Testing...';
+            statusDiv.className = 'status pending';
+
+            try {
+                const response = await fetch('http://192.168.1.37:8000/health');
+                const data = await response.json();
+                
+                if (data.status === 'healthy') {
+                    statusDiv.textContent = '✅ SUCCESS: Backend is accessible!';
+                    statusDiv.className = 'status success';
+                } else {
+                    statusDiv.textContent = '⚠️ Backend responded but status is: ' + JSON.stringify(data);
+                    statusDiv.className = 'status error';
+                }
+            } catch (error) {
+                statusDiv.textContent = '❌ FAILED: ' + error.message;
+                statusDiv.className = 'status error';
+                console.error('Backend test error:', error);
+            }
+        }
+
+        async function testSocket() {
+            const statusDiv = document.getElementById('socket-status');
+            statusDiv.textContent = 'Testing...';
+            statusDiv.className = 'status pending';
+
+            try {
+                const response = await fetch('http://192.168.1.37:8001/health');
+                const text = await response.text();
+                
+                if (text.includes('running')) {
+                    statusDiv.textContent = '✅ SUCCESS: Socket server is accessible!';
+                    statusDiv.className = 'status success';
+                } else {
+                    statusDiv.textContent = '⚠️ Socket server responded: ' + text;
+                    statusDiv.className = 'status error';
+                }
+            } catch (error) {
+                statusDiv.textContent = '❌ FAILED: ' + error.message;
+                statusDiv.className = 'status error';
+                console.error('Socket test error:', error);
+            }
+        }
+
+        async function testTasks() {
+            const statusDiv = document.getElementById('tasks-status');
+            const dataDiv = document.getElementById('tasks-data');
+            const patientId = document.getElementById('patient-id').value;
+
+            if (!patientId) {
+                statusDiv.textContent = '⚠️ Please enter a Patient ID';
+                statusDiv.className = 'status error';
+                return;
+            }
+
+            statusDiv.textContent = 'Testing...';
+            statusDiv.className = 'status pending';
+            dataDiv.textContent = '';
+
+            try {
+                const response = await fetch(`http://192.168.1.37:8000/api/tasks/patient/${patientId}`);
+                const data = await response.json();
+                
+                statusDiv.textContent = `✅ SUCCESS: Found ${data.length} task(s)`;
+                statusDiv.className = 'status success';
+                dataDiv.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                statusDiv.textContent = '❌ FAILED: ' + error.message;
+                statusDiv.className = 'status error';
+                console.error('Tasks test error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

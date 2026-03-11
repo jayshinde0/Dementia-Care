@@ -6,7 +6,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'r
 
 const API_URL = window.location.hostname === 'localhost' 
   ? 'http://localhost:8000/api'
-  : 'http://192.168.1.37:8000/api';
+  : 'http://172.17.30.107:8000/api';
 
 export default function PatientDetails() {
   const { id } = useParams();

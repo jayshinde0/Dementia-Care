@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, StatusBar } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, StatusBar, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import * as Speech from 'expo-speech';
+import taskPollingService from '../services/taskPollingService';
 
 export default function HomeScreen({ navigation }) {
   const [userName, setUserName] = useState('John Smith');
@@ -11,6 +12,14 @@ export default function HomeScreen({ navigation }) {
   useEffect(() => {
     loadUserData();
     setGreetingMessage();
+    
+    // Start polling service
+    console.log('HomeScreen: Starting task polling...');
+    taskPollingService.start();
+    
+    return () => {
+      taskPollingService.stop();
+    };
   }, []);
 
   const loadUserData = async () => {
@@ -23,6 +32,24 @@ export default function HomeScreen({ navigation }) {
     if (hour < 12) setGreeting('Good Morning');
     else if (hour < 18) setGreeting('Good Afternoon');
     else setGreeting('Good Evening');
+  };
+
+  const testTaskCheck = async () => {
+    console.log('Manual task check triggered');
+    
+    try {
+      const patientId = await AsyncStorage.getItem('userId');
+      const token = await AsyncStorage.getItem('userToken');
+      
+      Alert.alert(
+        'Debug Info',
+        `Patient ID: ${patientId}\nToken: ${token ? 'Present' : 'Missing'}\n\nCheck console for API call results`
+      );
+      
+      await taskPollingService.checkForNewTasks();
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    }
   };
 
   const menuItems = [
@@ -69,13 +96,27 @@ export default function HomeScreen({ navigation }) {
     navigation.navigate(item.screen);
   };
 
+  const handleLogout = async () => {
+    Speech.speak('Logging out', { language: 'en' });
+    await AsyncStorage.clear();
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Login' }],
+    });
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#1E293B" />
       
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>My Day</Text>
+        <View style={styles.headerContent}>
+          <Text style={styles.headerTitle}>My Day</Text>
+          <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+            <Ionicons name="log-out-outline" size={24} color="#FFFFFF" />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
@@ -83,6 +124,14 @@ export default function HomeScreen({ navigation }) {
         <View style={styles.greetingSection}>
           <Text style={styles.greeting}>{greeting}</Text>
           <Text style={styles.name}>{userName}</Text>
+          
+          {/* Test Button - Remove after testing */}
+          <TouchableOpacity 
+            style={styles.testButton}
+            onPress={testTaskCheck}
+          >
+            <Text style={styles.testButtonText}>🔍 Check for Tasks Now</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Menu Items */}
@@ -127,10 +176,18 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     paddingHorizontal: 20,
   },
+  headerContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   headerTitle: {
     fontSize: 24,
     fontWeight: '600',
     color: '#FFFFFF',
+  },
+  logoutButton: {
+    padding: 8,
   },
   scrollContent: {
     paddingBottom: 40,
@@ -149,6 +206,19 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: '700',
     color: '#1E293B',
+  },
+  testButton: {
+    marginTop: 16,
+    backgroundColor: '#3B82F6',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    alignSelf: 'flex-start',
+  },
+  testButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
   },
   menuContainer: {
     paddingHorizontal: 20,

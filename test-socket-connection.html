@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Socket.io Connection Test</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        #log {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .log-entry {
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Socket.io Connection Test</h1>
+    <p>Open this file on your mobile device browser to test socket connection</p>
+    
+    <div id="status" class="status info">Not connected</div>
+    
+    <button onclick="testConnection()">Test Connection</button>
+    <button onclick="clearLog()">Clear Log</button>
+    
+    <div id="log"></div>
+
+    <script>
+        const SOCKET_URL = 'http://192.168.1.37:8001';
+        let socket = null;
+
+        function addLog(message, type = 'info') {
+            const log = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.style.color = type === 'error' ? 'red' : type === 'success' ? 'green' : 'black';
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function updateStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+        }
+
+        function testConnection() {
+            addLog('Attempting to connect to: ' + SOCKET_URL);
+            updateStatus('Connecting...', 'info');
+
+            if (socket) {
+                socket.disconnect();
+            }
+
+            socket = io(SOCKET_URL, {
+                transports: ['polling', 'websocket'],
+                reconnection: false,
+                timeout: 10000
+            });
+
+            socket.on('connect', () => {
+                addLog('✅ Connected successfully!', 'success');
+                updateStatus('Connected', 'success');
+                
+                // Test patient registration
+                const testPatientId = 'test-patient-' + Date.now();
+                addLog('Registering test patient: ' + testPatientId);
+                socket.emit('register_patient', { patient_id: testPatientId });
+            });
+
+            socket.on('registered', (data) => {
+                addLog('✅ Patient registered: ' + JSON.stringify(data), 'success');
+            });
+
+            socket.on('connect_error', (error) => {
+                addLog('❌ Connection error: ' + error.message, 'error');
+                updateStatus('Connection failed', 'error');
+            });
+
+            socket.on('disconnect', () => {
+                addLog('Disconnected');
+                updateStatus('Disconnected', 'info');
+            });
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+
+        // Auto-test on load
+        window.onload = () => {
+            addLog('Page loaded. Click "Test Connection" to start.');
+        };
+    </script>
+</body>
+</html>

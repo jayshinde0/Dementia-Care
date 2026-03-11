@@ -8,7 +8,7 @@
     "splash": {
       "resizeMode": "contain",
       "backgroundColor": "#FFFFFF",
-      "image": "./assets/splash-icon.png"
+      "image": "./assets/51Ou6GOdiDL.webp"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
@@ -18,7 +18,7 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#FFFFFF",
-        "foregroundImage": "./assets/adaptive-icon.png"
+        "foregroundImage": "./assets/51Ou6GOdiDL.webp"
       },
       "package": "com.dementiacare.mobile"
     },

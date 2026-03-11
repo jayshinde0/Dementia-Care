@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import taskPollingService from '../services/taskPollingService';
 
-const API_URL = 'http://192.168.1.37:8000/api';
+const API_URL = 'http://172.17.30.107:8000/api';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -20,6 +21,10 @@ export default function LoginScreen({ navigation }) {
       await AsyncStorage.setItem('userToken', response.data.token);
       await AsyncStorage.setItem('userId', response.data.user_id);
       await AsyncStorage.setItem('userName', response.data.name);
+
+      // Start polling for tasks after login
+      console.log('Login successful, starting task polling...');
+      taskPollingService.start();
 
       // Force app to re-render by reloading
       navigation.reset({

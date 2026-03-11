@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Users, Bell, Settings, Menu, ChevronLeft, LogOut, Home } from 'lucide-react';
+import { LayoutDashboard, Users, Bell, Settings, Menu, ChevronLeft, LogOut, Home, Send } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const Sidebar = () => {
@@ -9,6 +9,7 @@ const Sidebar = () => {
   const menuItems = [
     { icon: <LayoutDashboard size={20} />, label: 'Overview', path: '/dashboard' },
     { icon: <Users size={20} />, label: 'Patients', path: '/patients' },
+    { icon: <Send size={20} />, label: 'Send Task', path: '/send-task' },
     { icon: <Bell size={20} />, label: 'Alerts', path: '/alerts' },
     { icon: <Settings size={20} />, label: 'Settings', path: '/settings' },
   ];

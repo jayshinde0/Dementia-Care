@@ -6,7 +6,7 @@ import * as Speech from 'expo-speech';
 import * as Location from 'expo-location';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.1.37:8000/api';
+const API_URL = 'http://172.17.30.107:8000/api';
 
 export default function EmergencyScreen() {
   const [sending, setSending] = useState(false);

@@ -6,6 +6,7 @@ import PatientHome from './pages/PatientHome';
 import PatientDetails from './pages/PatientDetails';
 import Alerts from './pages/Alerts';
 import Analytics from './pages/Analytics';
+import SendTask from './pages/SendTask';
 import './App.css';
 
 function App() {
@@ -30,6 +31,10 @@ function App() {
           element={isAuthenticated ? <DashboardRouter /> : <Navigate to="/login" />} 
         />
         <Route 
+          path="/patients" 
+          element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} 
+        />
+        <Route 
           path="/patient/:id" 
           element={isAuthenticated ? <PatientDetails /> : <Navigate to="/login" />} 
         />
@@ -40,6 +45,10 @@ function App() {
         <Route 
           path="/analytics" 
           element={isAuthenticated ? <Analytics /> : <Navigate to="/login" />} 
+        />
+        <Route 
+          path="/send-task" 
+          element={isAuthenticated ? <SendTask /> : <Navigate to="/login" />} 
         />
         <Route path="/" element={<Navigate to="/dashboard" />} />
       </Routes>

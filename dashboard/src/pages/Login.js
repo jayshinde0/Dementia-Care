@@ -4,7 +4,7 @@ import axios from 'axios';
 // Use IP address so it works from phone too
 const API_URL = window.location.hostname === 'localhost' 
   ? 'http://localhost:8000/api'
-  : 'http://192.168.1.37:8000/api';
+  : 'http://172.17.30.107:8000/api';
 
 export default function Login({ setAuth }) {
   const [email, setEmail] = useState('');
